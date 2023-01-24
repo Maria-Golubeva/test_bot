@@ -9,6 +9,10 @@ theme: /
     state: Hello
         intent!: /привет
         a: Привет привет
+        
+    state: HowAreYou
+        q!: как дела?
+        a: Замечательно! А у вас как дела?
 
     state: Bye
         intent!: /пока
