@@ -1,39 +1,5 @@
 <test>
-    <mockData>
-        <query>https://api.openweathermap.org/data/2.5/weather?lat=${lat}&amp;lon=${lon}&amp;appid=${API_key}&amp;units=${units}&amp;lang=${lang}</query>
-        <parameters>
-            <lat>56.8519</lat>
-            <lon>60.6122</lon>
-            <API_key>fc636e422739d41e8af83cec5c3d4431</API_key>
-            <units>metric</units>
-            <lang>ru</lang>
-        </parameters>
-        <response>{
-            "weather": [
-            {
-                "id": 800,
-                "main": "Clear",
-                "description": "ясно",
-                "icon": "01n"
-            }
-            ],
-            "main": {
-                "temp": -9.19,
-                "feels_like": -14.54,
-                "temp_min": -10.13,
-                "temp_max": -9.19,
-                "pressure": 1014,
-                "humidity": 86
-            }
-        }</response>
-    </mockData>
-    
-    <!--<mockData>-->
-    <!--    <query></query>-->
-    <!--    <response></response>-->
-    <!--</mockData>-->
-    
-    <test-case>
+    <test-case integration = "true">
         <dateTime>2023-01-28 13:23:55</dateTime>
         <q>/start</q>
         <a>Добрый день!</a>
@@ -53,6 +19,6 @@
         <a>Назовите, пожалуйста, город прибытия</a>
         <q>Екатеринбург</q>
         <a>Итак, город прибытия: Екатеринбург</a>
-        <a>В городе Екатеринбург сейчас ясно, -9.19°C.</a>
+        <a state="/Wheather/CurrentWheather" />
     </test-case>
-</test>    
+</test>

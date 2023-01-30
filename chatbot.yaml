@@ -8,6 +8,7 @@ language: ru
 tests:
   include:
     - test.xml
+    - test2.xml
 
 sts:
     noMatchThreshold: 0.2
@@ -16,3 +17,7 @@ nlp:
   intentNoMatchThresholds:
     phrases: 0.2
     patterns: 0.2
+
+injector:
+    botName: валерия
+    weatherApiKey: 'fc636e422739d41e8af83cec5c3d4431'

@@ -1,7 +1,7 @@
 {
   "project" : {
-    "id" : "test_bot1-1000069725-KhL",
-    "name" : "test_bot1-1000069725-KhL",
+    "id" : "test_bot3-1000069725-riD",
+    "name" : "test_bot3-1000069725-riD",
     "folder" : "/jaicp"
   },
   "settings" : {
@@ -37,13 +37,89 @@
       "refs" : [ ]
     },
     "priority" : 0
+  }, {
+    "path" : "/direction",
+    "enabled" : true,
+    "shared" : false,
+    "phrases" : [ {
+      "text" : "хочу билет"
+    }, {
+      "text" : "купить билет"
+    }, {
+      "text" : "билет @destination @departure @date"
+    }, {
+      "text" : "билет @destination @departure на @date"
+    }, {
+      "text" : "билет @destination @departure"
+    }, {
+      "text" : "купить билет @destination @departure "
+    } ],
+    "classificationRules" : {
+      "refs" : [ ]
+    },
+    "patterns" : [ "* ~билет *" ],
+    "slots" : [ {
+      "name" : "departure",
+      "entity" : "departure",
+      "required" : true,
+      "prompts" : [ "Из какого вы города летите?" ]
+    }, {
+      "name" : "destination",
+      "entity" : "destination",
+      "required" : true,
+      "prompts" : [ "В какой город вы летите?" ]
+    }, {
+      "name" : "date",
+      "entity" : "duckling.time",
+      "required" : true,
+      "prompts" : [ "Назовите, пожалуйста, дату отправления" ]
+    } ],
+    "priority" : 0
   } ],
-  "entities" : [ ],
-  "enabledSystemEntities" : [ "duckling.number", "duckling.time", "duckling.duration", "duckling.phone-number", "duckling.email", "duckling.url" ],
+  "entities" : [ {
+    "entity" : {
+      "name" : "departure",
+      "enabled" : true,
+      "shared" : false,
+      "type" : "annotation",
+      "priority" : 1,
+      "noSpelling" : true,
+      "noMorph" : false,
+      "phoneticSearch" : false,
+      "fuzzySearch" : false,
+      "client" : false,
+      "hidden" : false
+    },
+    "records" : [ {
+      "type" : "pattern",
+      "rule" : [ "[из/с] @mystem.geo" ],
+      "value" : ""
+    } ]
+  }, {
+    "entity" : {
+      "name" : "destination",
+      "enabled" : true,
+      "shared" : false,
+      "type" : "annotation",
+      "priority" : 1,
+      "noSpelling" : true,
+      "noMorph" : false,
+      "phoneticSearch" : false,
+      "fuzzySearch" : false,
+      "client" : false,
+      "hidden" : false
+    },
+    "records" : [ {
+      "type" : "pattern",
+      "rule" : [ "[в/на]  @mystem.geo" ],
+      "value" : ""
+    } ]
+  } ],
+  "enabledSystemEntities" : [ "mystem.geo", "duckling.number", "duckling.time", "duckling.duration", "duckling.phone-number", "duckling.email", "duckling.url" ],
   "spellerDictionary" : [ ],
   "systemEntities" : [ {
     "name" : "mystem.geo",
-    "enabled" : false
+    "enabled" : true
   }, {
     "name" : "mystem.persn",
     "enabled" : false
