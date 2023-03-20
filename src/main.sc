@@ -1,76 +1,73 @@
+patterns:
+    $deleteContent = (убрал*/удалил*/удаляют*/удаляет*)
+    $disappearPast = (пропал*/попал*/исчез*/делся/делись*/подевал*/отсутств*)
+    $earlier = (ранее/раньше)
+    $loadPres = (открывает*/показывает*/показывают/доступен/доступн*/работает/загружает*/грузит*
+        |возможн*/отображает*/воспроизводит*/вас производит*/включает*/находит*)
+    
+    $mediaContent = (фильм*/филиал/сим*/~фин/$series/мульт*/~серия/~сезон/эпизод*/~контент/~кино
+        |ролик*/трейлер*/видео*/видос*/~серия)
+    
+    $series = (сериал*/терял/серчик*/сирич)
+    $unavailable = (не $loadPres/недоступен/недоступн*/невозможн*)
+
 require: slotfilling/slotFilling.sc
   module = sys.zb-common
-require: phone.sc
-require: functions.js
-require: wheather.sc
-require: discount.sc
-require: city.sc
-require: dicts/discount.yaml
-    var = discountInfo
-    
-require: city/cities-ru.csv
-    module = sys.zb-common
-    name = Cities
-    var = Cities
-  
-
-
-init:
-    $global.$converters = {};
-
-    $global.$converters.CityConverter = function CityConverter(parseTree) {
-    var id = parseTree.Cities[0].value; 
-    return Cities[id].value;
-    };
-
-    bind("postProcess", function($context){
-        $context.session.lastState = $context.currentState;
-        log("@@@@@" + toPrettyString($context.session));
-    });
-
+require: number/number.sc
+  module = sys.zb-common
+require: patterns.sc
 theme: /
-    
-    state: Welcome
-        q!: *start
-        q!: (привет*/здравствуй*/hello)
-        random:
-            a: Добрый день! 
-            a: Здравствуйте!
-        a: Меня зовут {{ capitalize($injector.botName) }}. Чем я могу помочь?
-        script: 
-            $response.replies = $response.replies || [];
-            $response.replies.push( {
-                type: "image",
-                imageUrl: "https://fun-cats.ru/wp-content/uploads/c/a/b/cab5fbb958aa5a8bcfc539104443ad3f.jpeg",
-                text: "Это я!"
-            });
-        
-        state: Wheather
-            q: * погод* *
-            q: Отмена || fromState = /Phone/Ask, onlyThisState = true
-            a: Я могу подсказать Вам прогноз погоды
-            if: $client.phone
-                go!: /Phone/Confirm
-            else:
-                go!: /Phone/Ask
-        
-        state: Time
-            q: * врем* *
-            a: Я могу подсказать текущее время
-            
-    state: HowAreYou
-        q!: как дела?
-        a: Чудесно, спасибо, что спросили
 
-    state: Bye
-        intent!: /пока
-        a: Пока пока
+    state: Start
+        q!: $regex</start>
+        a: Начнём.
+
+    # state: Hello
+    #     intent!: /привет
+    #     a: Привет привет
+        
+    # state: HowAreYou
+    #     q!: как дела?
+    #     a: Замечательно! А у вас как дела?
+        
+    
+    state: DeletedContent
+        q!: пропал фильм *
+        q!: {($disappearPast/$unavailable) * [$oneWord] [$oneWord]}
+        q!: {(нет/нету) * $mediaContent}
+        q!: * $where * $mediaContent *
+        q!: * {[$where/куда] * $disappearPast * $mediaContent} *
+        q!: * {$unavailable * $mediaContent} *
+        q!: * [$why] * {(не ((могу/смог*/могл*/можем) * (найти/*смотреть/просмотр*)/нашел*/вижу)) * ($mediaContent/в каталог*)} *
+        q!: * {$earlier * показывал* * $mediaContent} *
+        q!: * {удален* * (наличи*/доступ*) * $mediaContent} *
+        q!: * {(наличи*/доступ*) * $mediaContent} *
+        q!: * {($why/(из/по) $subscription/причин*/(с/из/в) (ivi/иви)) * ($disappearPast/удалени*/нет/нету) * $mediaContent} *
+        q!: * {($why/(из/по) $subscription/причин*) * ($unavailable [$oneWord] [к/для] просмотр*) * $mediaContent} *
+        q!: * {($why/(из/по) $subscription/причин*) * (просмотр* $unavailable/$unavailable [$oneWord] [к/для] просмотр*) * ($mediaContent/сейчас)} *
+        q!: * {(проблем*/не находит*/нет/нету) * ([в] поиск*/с) * $mediaContent} *
+        q!: * {$mediaContent * (теперь/больше/*смотреть/сейчас) * (нет/нету)} *
+        q!: * {(прервал*/прерван*/продолжить/станет доступен) * просмотр* * $mediaContent} *
+        q!: * {код ошибки 4521} * $weight<+1.0>
+        q!: * чтобы * {(вернули) * $mediaContent} *
+        q!: * {(был* [$oneWord] (удален*/убран*)) * $mediaContent} *
+        q!: * $when * (появится/вернет*/(можно будет/смогу/сможем) *смотреть) * $mediaContent *
+        q!: * {(не досмотрел*/недосмотрел*) * $mediaContent} *
+        q!: * {*смотрел* * $mediaContent} * {(сейчас/теперь/раньш/сегодня) * (не (могу/получается/найти))} *
+        q!: * {(верни*) * $mediaContent} *
+        q!: * [$mediaContent] * $where * ((~новый/$Number) (сезон*/~серия)) * [$mediaContent] *
+        q!: * $why [то] (нет/нету/($ne (могу/можем/получается/выходит) (найти/отыскать))/($ne (вижу/видим))) * ([$mediaContent] *)
+        
+        a: запрос про удаленный контент
+
+    # state: Bye
+    #     intent!: /пока
+    #     a: Пока пока
 
     state: NoMatch
         event!: noMatch
-        a: Простите, я не поняла. Пожалуйста, переформулируйте Ваш вопрос
-        go!: {{ $session.lastState }}
+        a: Я не понял. Вы сказали: {{$request.query}}
 
-    state: Match
-        event!: match
-        a: {{$context.intent.answer}}
+    # state: Match
+    #     event!: match
+    #     a: {{$context.intent.answer}}
